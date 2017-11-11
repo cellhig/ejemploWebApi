@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -26,14 +27,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     //private Button btn1;
-    TextView sal;
+    //TextView sal;
+
+    ListView sal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
 
         /*btn1 = (Button) findViewById(R.id.btn1);
 
@@ -45,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-        sal  = (TextView) findViewById(R.id.salida);
+        //sal  = (TextView) findViewById(R.id.salida);
+        sal  = (ListView) findViewById(R.id.listaView);
 
         getData();
     }
@@ -53,23 +55,20 @@ public class MainActivity extends AppCompatActivity {
     public void getData(){
 
         //placeholder
-        //String sql = "https://jsonplaceholder.typicode.com/users/1";
+        String sql = "https://jsonplaceholder.typicode.com/users";
         //maps
         //String sql = "http://maps.googleapis.com/maps/api/geocode/json?address=Medellin";
         //jsonTest
-        String sql = "http://date.jsontest.com/";
+        //String sql = "http://date.jsontest.com/";
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        URL url = null;
-
+        //URL url = null;
         HttpURLConnection conn;
-
-
 
         try {
 
-            url = new URL(sql);
+            URL url = new URL(sql);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
@@ -83,36 +82,38 @@ public class MainActivity extends AppCompatActivity {
             }
 
             String json = response.toString();
-            //JSONArray jsonArr = new JSONArray(json);
+            JSONArray jsonArr = new JSONArray(json);
             String mensaje = "";
+            //JSONObject jsonObject = new JSONObject(json);
 
-            JSONObject jsonObject = new JSONObject(json);
             //placeholder
             /*mensaje = "nombre: "+" "+jsonObject.optString("name")+"\n"+"email: "+" "+
                     jsonObject.optString("email")+"\n" +"telefono: "+" "+
                     jsonObject.optString("phone")+"\n"+
                     "website: "+" "+jsonObject.optString("website")+"\n"+"\n"+"\n";*/
 
+            List<String> list = new ArrayList<>();
+
+            for (int i = 0; i < jsonArr.length(); i++){
+                JSONObject jsonObject1 = jsonArr.getJSONObject(i);
+                String dato =  jsonObject1.optString("name");
+                list.add(dato);
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
+            sal.setAdapter(adapter);
+
             //jsontest
-            mensaje = "time: "+" "+jsonObject.optString("milliseconds_since_epoch")+"\n"+
+            /*mensaje = "time: "+" "+jsonObject.optString("milliseconds_since_epoch")+"\n"+
                     "milliseconds_since_epoch: "+" "+jsonObject.optString("milliseconds_since_epoch") +
-                    "\n" +"date: "+" "+jsonObject.optString("date")+"\n"+"\n"+"\n";
+                    "\n" +"date: "+" "+jsonObject.optString("date")+"\n"+"\n"+"\n";*/
 
             // maps
             /*mensaje = "formato de dirección: "+" "+jsonObject.optString("formatted_address")+
-                    "\n"+"id del sitio: "+" "+jsonObject.optString("place_id    ")+"\n"
+                    "\n"+"id del sitio: "+" "+jsonObject.optString("place_id ")+"\n"
                     +"tipo de localizacion: "+" "+jsonObject.optString("location_type")+"\n"+"\n"+"\n";*/
 
-            /*for(int i = 0;i<jsonArr.length();i++){
-
-                JSONObject jsonObject = jsonArr.getJSONObject(i);
-
-                //Log.d("SLIDA",jsonObject.optString("name"));
-                mensaje += "nombre: "+" "+jsonObject.optString("name")+"\n"+"email: "+" "+jsonObject.optString("email")+"\n" +"telefono: "+" "+jsonObject.optString("phone")+"\n"+"\n"+"\n";
-
-            }*/
-
-            sal.setText(mensaje);
+            //sal.setText(mensaje);
 
         } catch (MalformedURLException e) {
 
